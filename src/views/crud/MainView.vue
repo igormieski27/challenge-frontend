@@ -20,7 +20,7 @@
         </v-app-bar>
 
         <!-- Conteúdo da página principal -->
-        <router-view></router-view>
+        <component :is="currentComponent"></component>
       </v-container>
     </v-main>
     <!-- Menu lateral -->
@@ -36,7 +36,7 @@
             </v-list-item-content>
           </v-list-item>
           <hr />
-          <v-list-item link @click="navigateTo('main')">
+          <v-list-item link @click="navigateTo('StudentList')">
             <v-list-item-content>
               <v-list-item-title class="d-flex flex-row">
                 <i class="material-icons mr-2">person</i>
@@ -51,18 +51,23 @@
 </template>
 
 <script>
+import StudentList from "./student/StudentList";
 export default {
   name: "MainView",
   data() {
     return {
-      drawer: true, // Define se o menu lateral está aberto ou fechado
+      drawer: true,
+      currentComponent: null,
     };
   },
   methods: {
-    navigateTo(routeName) {
+    navigateTo(componentName) {
       // Navegar para a rota específica ao clicar em um item do menu
-      this.$router.push({ name: routeName });
+      this.currentComponent = componentName;
     },
+  },
+  components: {
+    StudentList,
   },
 };
 </script>
