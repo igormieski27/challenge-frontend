@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Conteúdo da página -->
-    <v-main>
+    <v-main class="pt-0">
       <v-container>
         <!-- Barra de navegação -->
         <v-app-bar color="white" app>
