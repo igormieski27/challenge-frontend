@@ -18,19 +18,19 @@
           <v-card-text>
             <v-form @submit.prevent="register">
               <v-text-field
-                v-model="name"
+                v-model="user.name"
                 label="Nome"
                 outlined
                 required
               ></v-text-field>
               <v-text-field
-                v-model="email"
+                v-model="user.email"
                 label="E-mail"
                 outlined
                 required
               ></v-text-field>
               <v-text-field
-                v-model="password"
+                v-model="user.password"
                 label="Senha"
                 type="password"
                 outlined
@@ -38,7 +38,7 @@
                 :rules="[passwordRules]"
               ></v-text-field>
               <v-text-field
-                v-model="confirmPassword"
+                v-model="user.confirmPassword"
                 label="Confirmar Senha"
                 type="password"
                 outlined
@@ -49,7 +49,12 @@
                 type="submit"
                 block
                 color="primary"
-                :disabled="!name || !email || !password || !confirmPassword"
+                :disabled="
+                  !user.name ||
+                  !user.email ||
+                  !user.password ||
+                  !user.confirmPassword
+                "
               >
                 Cadastrar
               </v-btn>
@@ -68,10 +73,12 @@ export default {
   name: "RegisterView",
   data() {
     return {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      user: {
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      },
     };
   },
   computed: {
@@ -91,30 +98,27 @@ export default {
     confirmPasswordRules() {
       return [
         (value) => !!value || "Por favor, confirme sua senha",
-        (value) => value === this.password || "As senhas não coincidem",
+        (value) => value === this.user.password || "As senhas não coincidem",
       ];
     },
   },
   methods: {
     register() {
-      if (
-        !this.name ||
-        !this.email ||
-        !this.password ||
-        !this.confirmPassword
-      ) {
+      const { name, email, password, confirmPassword } = this.user;
+
+      if (!name || !email || !password || !confirmPassword) {
         alert("Por favor, preencha todos os campos.");
         return;
       }
-      console.log("Nome:", this.name);
-      console.log("Email:", this.email);
-      console.log("Senha:", this.password);
-      console.log("Confirmação de Senha:", this.confirmPassword);
+      console.log("Nome:", name);
+      console.log("Email:", email);
+      console.log("Senha:", password);
+      console.log("Confirmação de Senha:", confirmPassword);
 
-      this.name = "";
-      this.email = "";
-      this.password = "";
-      this.confirmPassword = "";
+      this.user.name = "";
+      this.user.email = "";
+      this.user.password = "";
+      this.user.confirmPassword = "";
       router.push("/");
     },
   },

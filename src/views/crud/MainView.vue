@@ -20,7 +20,7 @@
         </v-app-bar>
 
         <!-- Conteúdo da página principal -->
-        <component :is="currentComponent"></component>
+        <component :is="currentComponent" @navigateTo="navigateTo"></component>
       </v-container>
     </v-main>
     <!-- Menu lateral -->
@@ -62,7 +62,6 @@ export default {
   },
   methods: {
     navigateTo(componentName) {
-      // Navegar para a rota específica ao clicar em um item do menu
       this.currentComponent = componentName;
     },
   },

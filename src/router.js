@@ -3,6 +3,8 @@ import LoginView from "./views/auth/LoginView";
 import RegisterView from "./views/auth/RegisterView";
 import MainView from "./views/crud/MainView";
 import StudentList from "./views/crud/student/StudentList";
+import StudentCreate from "./views/crud/student/StudentCreate";
+
 const routeInfos = [
   {
     path: "/",
@@ -20,6 +22,11 @@ const routeInfos = [
     path: "/student-list",
     name: "StudentList",
     component: StudentList,
+  },
+  {
+    path: "/student-create",
+    name: "StudentCreate",
+    component: StudentCreate,
   },
 ];
 
