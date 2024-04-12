@@ -7,7 +7,7 @@
           <h3>Consulta de Alunos</h3>
           <v-btn
             class="w-20 mr-2 mb-auto ml-auto"
-            color="accent"
+            color="secondary"
             prepend-icon="mdi-account-plus"
             @click="changeComponent('StudentCreate')"
           >
@@ -56,12 +56,12 @@
             <span>Editar</span>
           </v-tooltip>
           <v-tooltip location="bottom">
-            <template v-slot:activator="{ props }">
+            <template v-slot:activator="{ props: activatorProps }">
               <v-btn
                 size="small"
                 icon
-                v-bind="props"
-                @click="deleteStudent(item)"
+                v-bind="activatorProps"
+                @click="dialog = true"
                 class="delete-icon"
               >
                 <v-icon> mdi-delete </v-icon>
@@ -69,6 +69,27 @@
             </template>
             <span>Remover</span>
           </v-tooltip>
+          <v-dialog v-model="dialog" max-width="400">
+            <v-card
+              prepend-icon="mdi-delete"
+              text="O registro será perdido para sempre."
+              title="Deseja excluir esse estudante?"
+            >
+              <v-spacer></v-spacer>
+              <v-container class="d-flex">
+                <v-btn color="primary" @click="dialog = false">
+                  Cancelar
+                </v-btn>
+                <v-btn
+                  class="ml-auto"
+                  color="secondary"
+                  @click="deleteStudent(item)"
+                >
+                  Confirmar
+                </v-btn>
+              </v-container>
+            </v-card>
+          </v-dialog>
         </template>
       </v-data-table>
     </v-card>
@@ -82,6 +103,7 @@ export default {
   data() {
     return {
       search: "",
+      dialog: false,
       students: [],
       headers: [
         {
@@ -112,13 +134,12 @@ export default {
     },
 
     async deleteStudent(item) {
-      if (confirm("Deseja remover o aluno " + item.name + "?") == true) {
-        try {
-          await StudentService.deleteStudent(item.ra);
-          this.fetchStudents();
-        } catch (error) {
-          console.error(error);
-        }
+      try {
+        await StudentService.deleteStudent(item.ra);
+        this.fetchStudents();
+        this.dialog = false;
+      } catch (error) {
+        console.error(error);
       }
     },
 
