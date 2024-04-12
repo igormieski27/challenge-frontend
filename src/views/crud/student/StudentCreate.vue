@@ -61,8 +61,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import { vMaska } from "maska";
+import StudentService from "../../../services/StudentsService.js";
+
 export default {
   directives: { maska: vMaska },
   name: "StudentForm",
@@ -95,11 +96,9 @@ export default {
     submit() {
       if (this.$refs.form.validate()) {
         if (this.edit) {
-          axios
-            .put(
-              "http://localhost:3000/students/" + this.student.ra,
-              this.student
-            )
+          // Usando o serviço StudentService para fazer a requisição PUT
+          // eslint-disable-next-line
+          StudentService.updateStudent(this.student.ra, this.student)
             .then((response) => {
               console.log(response.data);
               this.student = {
@@ -114,12 +113,13 @@ export default {
               console.error("There was an error!", error);
               alert("Ocorreu um erro ao editar o aluno.");
             });
-        }
-        if (!this.edit) {
-          axios
-            .post("http://localhost:3000/students", this.student)
-            // eslint-disable-next-line
+        } else {
+          // Usando o serviço StudentService para fazer a requisição POST
+          // eslint-disable-next-line
+          StudentService.createStudent(this.student)
             .then((response) => {
+              console.log(response.data);
+
               this.student = {
                 RA: "",
                 name: "",

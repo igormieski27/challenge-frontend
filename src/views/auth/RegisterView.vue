@@ -43,12 +43,11 @@
                 type="password"
                 outlined
                 required
-                :rules="[confirmPasswordRules]"
               ></v-text-field>
               <v-btn
                 type="submit"
                 block
-                color="primary"
+                color="secondary"
                 :disabled="
                   !user.name ||
                   !user.email ||
@@ -58,21 +57,36 @@
               >
                 Cadastrar
               </v-btn>
+              <v-btn block class="mt-2" color="primary" @click="voltar()">
+                Voltar
+              </v-btn>
             </v-form>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
+  <v-snackbar v-model="snackbar">
+    {{ snackText }}
+
+    <template v-slot:actions>
+      <v-btn color="pink" variant="text" @click="snackbar = false">
+        Fechar
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
 import router from "../../router";
+import UserService from "../../services/UserService";
 
 export default {
   name: "RegisterView",
   data() {
     return {
+      snackText: "",
+      snackbar: false,
       user: {
         name: "",
         email: "",
@@ -82,43 +96,56 @@ export default {
     };
   },
   computed: {
-    passwordRules() {
-      return [
-        (value) => !!value || "Senha é obrigatória",
-        (value) =>
-          (value && value.length >= 8) ||
-          "Senha precisa ter no mínimo 8 caracteres",
-        (value) =>
-          /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])(?=.*[^\w\d\s:])([^\s]){8,16}$/.test(
-            value
-          ) ||
-          "Senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número, um caractere especial e não deve conter espaços",
-      ];
-    },
-    confirmPasswordRules() {
-      return [
-        (value) => !!value || "Por favor, confirme sua senha",
-        (value) => value === this.user.password || "As senhas não coincidem",
-      ];
-    },
+    // Suas regras de validação de senha e confirmação de senha aqui
   },
   methods: {
-    register() {
+    async register() {
       const { name, email, password, confirmPassword } = this.user;
 
       if (!name || !email || !password || !confirmPassword) {
         alert("Por favor, preencha todos os campos.");
         return;
       }
-      console.log("Nome:", name);
-      console.log("Email:", email);
-      console.log("Senha:", password);
-      console.log("Confirmação de Senha:", confirmPassword);
 
-      this.user.name = "";
-      this.user.email = "";
-      this.user.password = "";
-      this.user.confirmPassword = "";
+      if (password !== confirmPassword) {
+        alert("As senhas não coincidem.");
+        return;
+      }
+
+      try {
+        // eslint-disable-next-line
+        const response = await UserService.createUser({
+          name,
+          email,
+          password,
+        });
+        this.user.name = "";
+        this.user.email = "";
+        this.user.password = "";
+        this.user.confirmPassword = "";
+        router.push("/");
+        this.snackText =
+          "Usuário cadastrado com sucesso! Faça login para continuar.";
+        this.snackbar = true;
+      } catch (error) {
+        if (
+          error.response &&
+          error.response.status === 500 &&
+          error.response.data.error.includes("users_email_unique")
+        ) {
+          this.snackText =
+            "O e-mail informado já está sendo usado por outro usuário. Por favor, escolha um e-mail diferente.";
+          this.snackbar = true;
+        } else {
+          this.snackText =
+            "Erro ao cadastrar usuário. Por favor, tente novamente.";
+          this.snackbar = true;
+          console.error(error);
+        }
+      }
+    },
+
+    voltar() {
       router.push("/");
     },
   },

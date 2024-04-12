@@ -14,7 +14,11 @@
           <v-container class="font-weight-bold text-left"
             >Módulo Acadêmico</v-container
           >
-          <v-container class="text-right mr-5">
+          <v-container
+            @click="logout()"
+            class="text-right mr-5"
+            style="user-select: none; cursor: pointer"
+          >
             <i class="material-icons">logout</i> Sair
           </v-container>
         </v-app-bar>
@@ -71,6 +75,13 @@ export default {
       console.log(item);
       this.currentComponent = componentName;
       this.editingItem = item; // Set the editing item
+    },
+
+    logout() {
+      // Limpa o token JWT do localStorage
+      localStorage.removeItem("token");
+      // Redireciona o usuário para a tela de login
+      this.$router.push("/");
     },
   },
   components: {
