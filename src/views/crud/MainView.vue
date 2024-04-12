@@ -20,7 +20,11 @@
         </v-app-bar>
 
         <!-- Conteúdo da página principal -->
-        <component :is="currentComponent" @navigateTo="navigateTo"></component>
+        <component
+          :is="currentComponent"
+          :item="editingItem"
+          @navigateTo="navigateTo"
+        ></component>
       </v-container>
     </v-main>
     <!-- Menu lateral -->
@@ -52,21 +56,26 @@
 
 <script>
 import StudentList from "./student/StudentList";
+import StudentCreate from "./student/StudentCreate";
 export default {
   name: "MainView",
   data() {
     return {
       drawer: true,
       currentComponent: null,
+      editingItem: null,
     };
   },
   methods: {
-    navigateTo(componentName) {
+    navigateTo(componentName, item = null) {
+      console.log(item);
       this.currentComponent = componentName;
+      this.editingItem = item; // Set the editing item
     },
   },
   components: {
     StudentList,
+    StudentCreate,
   },
 };
 </script>

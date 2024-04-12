@@ -1,89 +1,144 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="12">
-        <div style="display: flex; flex-direction: row; padding: 10px">
-          <h4>Cadastro de Aluno</h4>
-        </div>
-        <hr />
-      </v-col>
-    </v-row>
-    <v-card-text>
-      <v-form @submit.prevent="register">
-        <v-text-field
-          v-model="newStudent.name"
-          label="Nome"
-          outlined
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="newStudent.email"
-          label="E-mail"
-          outlined
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="newStudent.cpf"
-          label="Senha"
-          type="password"
-          outlined
-          required
-        ></v-text-field>
-        <v-btn
-          type="submit"
-          block
-          color="primary"
-          :disabled="!newStudent.name || !newStudent.email || !newStudent.cpf"
-        >
-          Cadastrar
-        </v-btn>
-      </v-form>
-    </v-card-text>
+    <v-form ref="form" v-model="valid" lazy-validation>
+      <v-text-field
+        :is="student && student.ra"
+        v-model="student.ra"
+        label="RA"
+        :disabled="true"
+      ></v-text-field>
+
+      <v-text-field
+        v-model="student.name"
+        :rules="[rules.required]"
+        label="Nome"
+        required
+      ></v-text-field>
+
+      <v-text-field
+        v-model="student.email"
+        :rules="[rules.required, rules.email]"
+        label="E-mail"
+        required
+      ></v-text-field>
+
+      <v-text-field
+        ref="cpf"
+        v-model="student.cpf"
+        v-maska:[cpfMask]
+        :rules="[rules.required, rules.cpf]"
+        label="CPF"
+        required
+      ></v-text-field>
+
+      <v-btn size="large" :disabled="!valid" color="secondary" @click="submit">
+        Salvar
+      </v-btn>
+      <v-btn color="primary" @click="cancel()"> Cancelar </v-btn>
+    </v-form>
   </v-container>
 </template>
 
 <script>
+import axios from "axios";
+import { vMaska } from "maska";
+
 export default {
-  name: "StudentCreate",
-  data() {
-    return {
-      newStudent: {
+  directives: { maska: vMaska },
+  name: "StudentForm",
+  props: ["item"],
+  data: () => ({
+    valid: true,
+    edit: false,
+    student: {
+      ra: "",
+      name: "",
+      email: "",
+      cpf: "",
+    },
+    cpfMask: { mask: "###.###.###-##" },
+    rules: {
+      required: (value) => !!value || "Obrigatório.",
+      email: (value) => /.+@.+\..+/.test(value) || "E-mail inválido.",
+      cpf: (value) => {
+        const regex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+        return (
+          regex.test(value) || "CPF inválido. Formato esperado: 000.000.000-00"
+        );
+      },
+    },
+  }),
+  methods: {
+    submit() {
+      if (this.$refs.form.validate()) {
+        if (this.edit) {
+          axios
+            .put(
+              "http://localhost:3000/students/" + this.student.ra,
+              this.student
+            )
+            .then((response) => {
+              console.log(response.data);
+              alert("Aluno editado com sucesso!");
+              this.student = {
+                RA: "",
+                name: "",
+                email: "",
+                cpf: "",
+              };
+              this.changeComponent("StudentList");
+            })
+            .catch((error) => {
+              console.error("There was an error!", error);
+              alert("Ocorreu um erro ao editar o aluno.");
+            });
+        }
+        if (!this.edit) {
+          axios
+            .post("http://localhost:3000/students", this.student)
+            // eslint-disable-next-line
+            .then((response) => {
+              alert("Aluno cadastrado com sucesso!");
+              this.student = {
+                RA: "",
+                name: "",
+                email: "",
+                cpf: "",
+              };
+              this.changeComponent("StudentList");
+            })
+            .catch((error) => {
+              console.error("There was an error!", error);
+              alert("Ocorreu um erro ao cadastrar o aluno.");
+            });
+        }
+      }
+    },
+
+    cancel() {
+      this.student = {
+        RA: "",
         name: "",
         email: "",
         cpf: "",
-      },
-    };
+      };
+      this.changeComponent("StudentList");
+    },
+
+    changeComponent(componentName) {
+      this.$emit("navigateTo", componentName);
+    },
   },
-  methods: {
-    editStudent(id) {
-      // Lógica para editar estudante
-      alert(`Editar estudante ${id}`);
-    },
-    deleteStudent(id) {
-      // Lógica para remover estudante
-      alert(`Remover estudante ${id}`);
-    },
+
+  mounted() {
+    if (this.item && this.item.ra) {
+      this.edit = true;
+      this.student = this.item;
+    }
   },
 };
 </script>
 
-<style scoped>
-/* Adicione seus estilos aqui. Exemplo: */
-.table-actions button {
-  margin-right: 8px;
-}
-
-.v-icon {
-  transition: all 0.3s ease; /* Smooth transition for size and color */
-}
-
-.edit-icon:hover {
-  color: #2266ff; /* Color change on hover */
-  transform: scale(1.2); /* Slightly larger */
-}
-
-.delete-icon:hover {
-  color: red; /* Color change on hover */
-  transform: scale(1.2); /* Slightly larger */
-}
+<style>
+/* Adicione estilos personalizados, se necessário */
 </style>
