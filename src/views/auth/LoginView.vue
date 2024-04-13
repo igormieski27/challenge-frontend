@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6">
-        <v-card style="top: 20%" class="pa-12">
+        <v-card style="top: 15%" class="pa-12">
           <v-img
             :width="300"
             aspect-ratio="16/9"
@@ -37,7 +37,7 @@
                 required
               ></v-text-field>
               <v-btn
-                type="submit"
+                @click="login(email, password)"
                 block
                 color="primary"
                 :disabled="!email || !password"
@@ -73,8 +73,8 @@ export default {
     };
   },
   methods: {
-    async login() {
-      if (!this.email || !this.password) {
+    async login(email, password) {
+      if (!email || !password) {
         alert("Por favor, preencha todos os campos.");
         return;
       }
@@ -85,12 +85,12 @@ export default {
           email: this.email,
           password: this.password,
         });
-        console.log(response.data);
         // Se o login for bem-sucedido, salva o token no localStorage
         localStorage.setItem("token", response.data.token);
 
         // Redireciona para a página principal
         router.push("/main");
+        return response.status;
       } catch (error) {
         // Se houver um erro durante o login, exibe uma mensagem de erro
         alert("E-mail ou senha inválidos. Por favor, tente novamente.");

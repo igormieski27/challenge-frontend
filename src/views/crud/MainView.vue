@@ -28,6 +28,7 @@
           :is="currentComponent"
           :item="editingItem"
           @navigateTo="navigateTo"
+          @snackbar="showSnackBar"
         ></component>
       </v-container>
     </v-main>
@@ -55,6 +56,15 @@
         </v-list>
       </v-container>
     </v-navigation-drawer>
+    <v-snackbar v-model="snackbar">
+      {{ snackbarText }}
+
+      <template v-slot:actions>
+        <v-btn color="pink" variant="text" @click="snackbar = false">
+          Fechar
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -68,6 +78,8 @@ export default {
       drawer: true,
       currentComponent: null,
       editingItem: null,
+      snackbar: false,
+      snackbarText: "",
     };
   },
   methods: {
@@ -82,6 +94,11 @@ export default {
       localStorage.removeItem("token");
       // Redireciona o usuário para a tela de login
       this.$router.push("/");
+    },
+
+    showSnackBar(data) {
+      this.snackbarText = data;
+      this.snackbar = true;
     },
   },
   components: {

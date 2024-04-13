@@ -11,9 +11,9 @@
             src="https://maisaedu.com.br/hubfs/site-grupo-a/logo-mais-a-educacao.svg"
           ></v-img>
           <v-card-title
-            class="text-center"
+            class="text-center mt-2 mb-1"
             style="font-weight: 300; font-size: 25px; font-stretch: expanded"
-            >CADASTRO</v-card-title
+            >Cadastro</v-card-title
           >
           <v-card-text>
             <v-form @submit.prevent="register">

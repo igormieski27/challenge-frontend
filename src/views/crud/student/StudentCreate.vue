@@ -12,14 +12,19 @@
 
         <v-text-field
           v-model="student.name"
-          :rules="[rules.required]"
+          :rules="[rules.required, rules.nameMaxLength]"
           label="Nome *"
           required
         ></v-text-field>
 
         <v-text-field
           v-model="student.email"
-          :rules="[rules.required, rules.email]"
+          :rules="[
+            rules.required,
+            rules.email,
+            rules.emailMaxLength,
+            rules.noSpaces,
+          ]"
           label="E-mail *"
           required
         ></v-text-field>
@@ -47,15 +52,6 @@
           </v-btn>
         </v-container>
       </v-container>
-      <v-snackbar v-model="snackbar" :timeout="timeout">
-        {{ snackBarText }}
-
-        <template v-slot:actions>
-          <v-btn color="blue" variant="text" @click="snackbar = false">
-            Close
-          </v-btn>
-        </template>
-      </v-snackbar>
     </v-form>
   </v-container>
 </template>
@@ -63,16 +59,19 @@
 <script>
 import { vMaska } from "maska";
 import StudentService from "../../../services/StudentsService.js";
+import validationRules from "../../../services/validationRules.js";
 
 export default {
   directives: { maska: vMaska },
   name: "StudentForm",
+
   props: ["item"],
   data: () => ({
     valid: true,
+    timeout: 5000,
     edit: false,
-    snackbar: false,
-    snackBarText: "",
+    snackbarCreate: false,
+    snackBarCreateText: "",
     student: {
       ra: "",
       name: "",
@@ -81,15 +80,11 @@ export default {
     },
     cpfMask: { mask: "###.###.###-##" },
     rules: {
-      required: (value) => !!value || "(*) Campo obrigatório.",
-      email: (value) => /.+@.+\..+/.test(value) || "(*) E-mail inválido.",
-      cpf: (value) => {
-        const regex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
-        return (
-          regex.test(value) ||
-          "(*) CPF inválido. Formato esperado: 000.000.000-00"
-        );
-      },
+      ...validationRules,
+      nameMaxLength: (value) =>
+        value.length <= 32 || "(*) O nome deve ter no máximo 32 caracteres.",
+      emailMaxLength: (value) =>
+        value.length <= 64 || "(*) O e-mail deve ter no máximo 64 caracteres.",
     },
   }),
   methods: {
@@ -107,11 +102,12 @@ export default {
                 email: "",
                 cpf: "",
               };
+              this.emitSnackbar("Aluno editado com sucesso!");
               this.changeComponent("StudentList");
             })
             .catch((error) => {
               console.error("There was an error!", error);
-              alert("Ocorreu um erro ao editar o aluno.");
+              this.emitSnackbar("Ocorreu um erro ao editar o aluno.");
             });
         } else {
           // Usando o serviço StudentService para fazer a requisição POST
@@ -126,11 +122,13 @@ export default {
                 email: "",
                 cpf: "",
               };
+              this.emitSnackbar("Aluno cadastrado com sucesso!");
+
               this.changeComponent("StudentList");
             })
             .catch((error) => {
               console.error("There was an error!", error);
-              alert("Ocorreu um erro ao cadastrar o aluno.");
+              this.emitSnackbar("Ocorreu um erro ao cadastrar o aluno.");
             });
         }
       }
@@ -148,6 +146,10 @@ export default {
 
     changeComponent(componentName) {
       this.$emit("navigateTo", componentName);
+    },
+
+    emitSnackbar(text) {
+      this.$emit("snackbar", text);
     },
   },
 

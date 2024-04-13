@@ -61,7 +61,10 @@
                 size="small"
                 icon
                 v-bind="activatorProps"
-                @click="dialog = true"
+                @click="
+                  dialog = true;
+                  idDelete = item.ra;
+                "
                 class="delete-icon"
               >
                 <v-icon> mdi-delete </v-icon>
@@ -83,7 +86,7 @@
                 <v-btn
                   class="ml-auto"
                   color="secondary"
-                  @click="deleteStudent(item)"
+                  @click="deleteStudent(idDelete)"
                 >
                   Confirmar
                 </v-btn>
@@ -104,6 +107,7 @@ export default {
     return {
       search: "",
       dialog: false,
+      idDelete: 0,
       students: [],
       headers: [
         {
@@ -124,6 +128,9 @@ export default {
       this.$emit("navigateTo", componentName);
     },
 
+    emitSnackbar(text) {
+      this.$emit("snackbar", text);
+    },
     async fetchStudents() {
       try {
         const response = await StudentService.getStudents();
@@ -133,9 +140,9 @@ export default {
       }
     },
 
-    async deleteStudent(item) {
+    async deleteStudent(ra) {
       try {
-        await StudentService.deleteStudent(item.ra);
+        await StudentService.deleteStudent(ra);
         this.fetchStudents();
         this.dialog = false;
       } catch (error) {
