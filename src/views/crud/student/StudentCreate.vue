@@ -91,7 +91,6 @@ export default {
     submit() {
       if (this.$refs.form.validate()) {
         if (this.edit) {
-          // Usando o serviço StudentService para fazer a requisição PUT
           // eslint-disable-next-line
           StudentService.updateStudent(this.student.ra, this.student)
             .then((response) => {
@@ -110,7 +109,6 @@ export default {
               this.emitSnackbar("Ocorreu um erro ao editar o aluno.");
             });
         } else {
-          // Usando o serviço StudentService para fazer a requisição POST
           // eslint-disable-next-line
           StudentService.createStudent(this.student)
             .then((response) => {
@@ -123,7 +121,6 @@ export default {
                 cpf: "",
               };
               this.emitSnackbar("Aluno cadastrado com sucesso!");
-
               this.changeComponent("StudentList");
             })
             .catch((error) => {
@@ -161,7 +158,3 @@ export default {
   },
 };
 </script>
-
-<style>
-/* Adicione estilos personalizados, se necessário */
-</style>

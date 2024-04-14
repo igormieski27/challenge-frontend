@@ -26,6 +26,12 @@
               <v-text-field
                 v-model="user.email"
                 label="E-mail"
+                :rules="[
+                  rules.required,
+                  rules.email,
+                  rules.emailMaxLength,
+                  rules.noSpaces,
+                ]"
                 outlined
                 required
               ></v-text-field>
@@ -80,6 +86,7 @@
 <script>
 import router from "../../router";
 import UserService from "../../services/UserService";
+import validationRules from "../../services/validationRules.js";
 
 export default {
   name: "RegisterView",
@@ -93,10 +100,15 @@ export default {
         password: "",
         confirmPassword: "",
       },
+      rules: {
+        ...validationRules,
+        nameMaxLength: (value) =>
+          value.length <= 32 || "(*) O nome deve ter no máximo 32 caracteres.",
+        emailMaxLength: (value) =>
+          value.length <= 64 ||
+          "(*) O e-mail deve ter no máximo 64 caracteres.",
+      },
     };
-  },
-  computed: {
-    // Suas regras de validação de senha e confirmação de senha aqui
   },
   methods: {
     async register() {

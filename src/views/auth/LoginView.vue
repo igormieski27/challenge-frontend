@@ -78,21 +78,15 @@ export default {
         alert("Por favor, preencha todos os campos.");
         return;
       }
-
       try {
-        // Chama o UserService para autenticar o usuário
         const response = await UserService.loginUser({
           email: this.email,
           password: this.password,
         });
-        // Se o login for bem-sucedido, salva o token no localStorage
         localStorage.setItem("token", response.data.token);
-
-        // Redireciona para a página principal
         router.push("/main");
         return response.status;
       } catch (error) {
-        // Se houver um erro durante o login, exibe uma mensagem de erro
         alert("E-mail ou senha inválidos. Por favor, tente novamente.");
         console.error(error);
       }

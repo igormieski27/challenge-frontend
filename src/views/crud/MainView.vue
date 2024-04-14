@@ -84,15 +84,14 @@ export default {
   },
   methods: {
     navigateTo(componentName, item = null) {
-      console.log(item);
       this.currentComponent = componentName;
-      this.editingItem = item; // Set the editing item
+      if (item) {
+        this.editingItem = item;
+      }
     },
 
     logout() {
-      // Limpa o token JWT do localStorage
       localStorage.removeItem("token");
-      // Redireciona o usuário para a tela de login
       this.$router.push("/");
     },
 

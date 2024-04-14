@@ -161,20 +161,19 @@ export default {
 </script>
 
 <style scoped>
-/* Adicione seus estilos aqui. Exemplo: */
 .table-actions button {
   margin-right: 8px;
 }
 
 .v-icon {
-  transition: all 0.3s ease; /* Smooth transition for size and color */
+  transition: all 0.3s ease;
 }
 
 .edit-icon:hover {
-  color: #2266ff; /* Color change on hover */
+  color: #2266ff;
 }
 
 .delete-icon:hover {
-  color: red; /* Color change on hover */
+  color: red;
 }
 </style>

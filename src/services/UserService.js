@@ -3,8 +3,8 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:3000", // Your Node.js server URL
-  withCredentials: false, // This is the default
+  baseURL: "http://localhost:3000",
+  withCredentials: false,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -28,11 +28,10 @@ export default {
     return apiClient.post("/users/login", credentials);
   },
   isLoggedIn() {
-    // Verifica se o token JWT está presente no armazenamento local (localStorage) e se não está expirado
     const token = localStorage.getItem("token");
     if (token) {
       const decodedToken = jwtDecode(token);
-      return decodedToken && decodedToken.exp * 1000 > Date.now(); // Verifica se o token não está expirado
+      return decodedToken;
     }
     return false;
   },

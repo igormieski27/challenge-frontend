@@ -18,19 +18,19 @@ const routeInfos = [
   {
     path: "/main",
     component: MainView,
-    meta: { requiresAuth: true }, // Define a meta propriedade para indicar que essa rota requer autenticação
+    meta: { requiresAuth: true },
   },
   {
     path: "/student-list",
     name: "StudentList",
     component: StudentList,
-    meta: { requiresAuth: true }, // Define a meta propriedade para indicar que essa rota requer autenticação
+    meta: { requiresAuth: true },
   },
   {
     path: "/student-create",
     name: "StudentCreate",
     component: StudentCreate,
-    meta: { requiresAuth: true }, // Define a meta propriedade para indicar que essa rota requer autenticação
+    meta: { requiresAuth: true },
   },
 ];
 
@@ -40,18 +40,13 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // Verifica se a rota requer autenticação
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    // Verifica se o usuário está autenticado
     if (!UserService.isLoggedIn()) {
-      // Se não estiver autenticado, redireciona para a tela de login
       next("/");
     } else {
-      // Se estiver autenticado, permite o acesso à rota
       next();
     }
   } else {
-    // Se a rota não requer autenticação, permite o acesso
     next();
   }
 });
